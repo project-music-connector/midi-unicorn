@@ -1,12 +1,11 @@
 package sound.gen.effects;
 
-import sound.gen.effects.AudioEffect;
 
-import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * Created by Asimm on 4/7/2017.
  */
-public class EffectStack extends ArrayList<AudioEffect> {
+public class EffectStack extends Stack<AudioEffect> {
 
 }
