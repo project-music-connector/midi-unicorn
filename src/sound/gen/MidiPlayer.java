@@ -35,7 +35,7 @@ public class MidiPlayer {
         }
 
         private synchronized void noteOn() {
-            mChannels[0].noteOn(note.getKey());
+            mChannels[0].noteOn(note.getKey(),1);
         }
 
         public void run() {
