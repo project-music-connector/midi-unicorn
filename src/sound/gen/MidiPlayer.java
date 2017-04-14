@@ -69,4 +69,15 @@ public class MidiPlayer {
             play(n);
         }
     }
+
+    public void playSheet(List<List<MidiNote>> sheet) {
+        for (List<MidiNote> column : sheet) {
+            play(column);
+            try {
+                wait(MidiNote.baseDuration);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
