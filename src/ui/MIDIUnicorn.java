@@ -1,6 +1,8 @@
 package ui;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -12,7 +14,10 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.w3c.dom.css.Rect;
+import sound.algorithms.UnicornParser;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,8 +52,12 @@ public class MIDIUnicorn extends Application {
     Button editGridButton;
     List<String> musicalKey;
 
+    UnicornParser parser;
 
-    FileChooser fileIO;
+
+    FileChooser fileIO = new FileChooser();
+    int length = 20;
+    int width = 20;
 
     private class ImageUnit extends Rectangle {
         private Paint currentColor;
@@ -67,29 +76,62 @@ public class MIDIUnicorn extends Application {
                 }
             });
         }
+
         public ImageUnit(Paint color) {
             this();
             setFill(color);
             setStroke(Paint.valueOf("black"));
         }
+        public Paint getPaint() {
+            return currentColor;
+        }
     }
 
+
+
     public void start(Stage primaryStage) {
+        parser = new UnicornParser();
+
         openFiles = new HashMap<>();
 
         mainView = new BorderPane();
 
 
         activePane = new GridPane();
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 20; j++) {
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
                 activePane.add(new ImageUnit(Paint.valueOf("white")),i,j);
             }
         }
 
-        buttonBox = new HBox(5.0);
+        buttonBox = new HBox(20);
+
+        playButton = new Button();
+        playButton.setText("Play");
+        playButton.setOnAction(e -> {
+            // Turn GridPane into image.
+            ObservableList<Node> children = activePane.getChildren();
+            BufferedImage imageWriter = new BufferedImage(length,width,BufferedImage.TYPE_BYTE_GRAY);
+            for (Node n : children) {
+                imageWriter.setRGB(GridPane.getRowIndex(n),GridPane.getColumnIndex(n),
+                        ((ImageUnit)n).getPaint().toString().equals("black") ? 0 : 255);
+            }
+            // parser.parse(imageWriter); // TODO: turn into int[][]
+            // parser.setKey(key);
+            // parser.play();
+        });
+        playButton.setPrefSize(100,100);
+        buttonBox.getChildren().add(playButton);
+
+        fileOpenButton = new Button();
+        fileOpenButton.setText("Open File");
+        fileOpenButton.setPrefSize(100,100);
+        fileOpenButton.setOnAction(e -> {
+
+        });
 
         mainView.setCenter(activePane);
+        mainView.setTop(buttonBox);
         Scene primaryScene = new Scene(mainView);
 
         primaryStage.setScene(primaryScene);
