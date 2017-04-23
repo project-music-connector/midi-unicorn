@@ -7,6 +7,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiUnavailableException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -70,8 +71,8 @@ public class MidiPlayer {
         }
     }
 
-    public void playSheet(List<List<MidiNote>> sheet) {
-        for (List<MidiNote> column : sheet) {
+    public void playSheet(ArrayList<ArrayList<MidiNote>> sheet) {
+        for (ArrayList<MidiNote> column : sheet) {
             play(column);
             try {
                 wait(MidiNote.baseDuration);

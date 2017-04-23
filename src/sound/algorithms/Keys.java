@@ -15,10 +15,12 @@ public enum Keys {
 
     private int value;
     private int quality;
+    private Chord[] chords;
 
     Keys(int value, int quality) {
         this.value = value;
         this.quality = quality;
+        chords = new Chord[7];
     }
 
     public int getValue() {
@@ -27,9 +29,22 @@ public enum Keys {
 
     public Chord[] getRelationTable() {
         if (quality == 0){
-            return [Chord.MAJOR, ....];
+            chords[0] = Chord.MAJOR;
+            chords[1] = Chord.MINOR;
+            chords[2] = Chord.MINOR;
+            chords[3] = Chord.MAJOR;
+            chords[4] = Chord.MAJOR;
+            chords[5] = Chord.MINOR;
+            chords[6] = Chord.DIMINISHED;
         } else {
-            return [Chord.MINOR, ....];
+            chords[0] = Chord.MINOR;
+            chords[1] = Chord.DIMINISHED;
+            chords[2] = Chord.MAJOR;
+            chords[3] = Chord.MINOR;
+            chords[4] = Chord.MAJOR;
+            chords[5] = Chord.MAJOR;
+            chords[6] = Chord.MAJOR;
         }
+        return chords;
     }
 }
