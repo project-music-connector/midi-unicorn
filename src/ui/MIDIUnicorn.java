@@ -9,16 +9,20 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.w3c.dom.css.Rect;
+import sound.algorithms.Keys;
 import sound.algorithms.UnicornParser;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -127,7 +131,26 @@ public class MIDIUnicorn extends Application {
         fileOpenButton.setText("Open File");
         fileOpenButton.setPrefSize(100,100);
         fileOpenButton.setOnAction(e -> {
-
+            File imageFile = fileIO.showSaveDialog(primaryStage);
+            BufferedImage userImage =
+                    new BufferedImage(100,100,
+                            BufferedImage.TYPE_INT_RGB);
+            try {
+                userImage = ImageIO.read(imageFile);
+            } catch (IOException error) {
+                error.printStackTrace();
+            } finally {
+                Color tmp;
+                int[][] imageArray = new int[userImage.getHeight()][userImage.getWidth()];
+                for (int i = 0; i < userImage.getHeight(); i++) {
+                    for (int j = 0; j < userImage.getWidth(); j++) {
+                        tmp = new Color(userImage.getRGB(i,j));
+                        imageArray[i][j] =
+                                (tmp.getRed()+tmp.getBlue()+tmp.getGreen())/3;
+                    }
+                }
+                parser.parse(imageArray, Keys.A_FLAT_MJ);
+            }
         });
 
         mainView.setCenter(activePane);
