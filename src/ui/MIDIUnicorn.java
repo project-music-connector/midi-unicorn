@@ -140,16 +140,16 @@ public class MIDIUnicorn extends Application {
             } catch (IOException error) {
                 error.printStackTrace();
             } finally {
-                Color tmp;
-                int[][] imageArray = new int[userImage.getHeight()][userImage.getWidth()];
-                for (int i = 0; i < userImage.getHeight(); i++) {
-                    for (int j = 0; j < userImage.getWidth(); j++) {
-                        tmp = new Color(userImage.getRGB(i,j));
-                        imageArray[i][j] =
-                                (tmp.getRed()+tmp.getBlue()+tmp.getGreen())/3;
-                    }
-                }
-                parser.parse(imageArray, Keys.A_FLAT_MJ);
+//                Color tmp;
+//                int[][] imageArray = new int[userImage.getHeight()][userImage.getWidth()];
+//                for (int i = 0; i < userImage.getHeight(); i++) {
+//                    for (int j = 0; j < userImage.getWidth(); j++) {
+//                        tmp = new Color(userImage.getRGB(i,j));
+//                        imageArray[i][j] =
+//                                (tmp.getRed()+tmp.getBlue()+tmp.getGreen())/3;
+//                    }
+//                }
+                parser.parse(userImage, 8,8);
             }
         });
         buttonBox.getChildren().add(fileOpenButton);
