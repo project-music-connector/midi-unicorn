@@ -152,6 +152,7 @@ public class MIDIUnicorn extends Application {
                 parser.parse(imageArray, Keys.A_FLAT_MJ);
             }
         });
+        buttonBox.getChildren().add(fileOpenButton);
 
         mainView.setCenter(activePane);
         mainView.setTop(buttonBox);
