@@ -149,7 +149,7 @@ public class MIDIUnicorn extends Application {
 //                                (tmp.getRed()+tmp.getBlue()+tmp.getGreen())/3;
 //                    }
 //                }
-                parser.parse(userImage, 8,8);
+                parser.parse(userImage, 8,8); // TODO: Implement octave and divisions selection
             }
         });
         buttonBox.getChildren().add(fileOpenButton);
