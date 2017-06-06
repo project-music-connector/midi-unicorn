@@ -54,6 +54,7 @@ public class MIDIUnicorn extends Application {
     Button fileSaveButton;
     Button playButton;
     Button editGridButton;
+
     List<String> musicalKey;
 
     UnicornParser parser;
@@ -131,7 +132,7 @@ public class MIDIUnicorn extends Application {
         fileOpenButton.setText("Open File");
         fileOpenButton.setPrefSize(100,100);
         fileOpenButton.setOnAction(e -> {
-            File imageFile = fileIO.showSaveDialog(primaryStage);
+            File imageFile = fileIO.showOpenDialog(primaryStage);
             BufferedImage userImage =
                     new BufferedImage(100,100,
                             BufferedImage.TYPE_INT_RGB);
@@ -150,8 +151,11 @@ public class MIDIUnicorn extends Application {
 //                    }
 //                }
                 parser.parse(userImage, 8,8); // TODO: Implement octave and divisions selection
+                parser.play(Keys.A_FLAT_MJ);
             }
         });
+
+
         buttonBox.getChildren().add(fileOpenButton);
 
         mainView.setCenter(activePane);

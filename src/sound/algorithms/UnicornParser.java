@@ -42,7 +42,7 @@ public class UnicornParser {
     public void play(Keys key) {
         for (int i = 0; i < image[0].length; i++) {
             int j = image.length - 1;
-            while (image[j][i] != 1 && j >= 0) {
+            while (j >= 0 && image[j][i] != 1) {
                 j--;
             }
             int base = j % 7;
@@ -55,7 +55,7 @@ public class UnicornParser {
         }
         ArrayList<ArrayList<MidiNote>> playable = new ArrayList<>(image[0].length);
         for (int i = 0; i < image[0].length; i++) {
-            playable.set(i, new ArrayList<>());
+            playable.add(new ArrayList<>());
         }
         for (int i = 0; i < image.length; i++) {
             int previous = 0;
@@ -79,6 +79,7 @@ public class UnicornParser {
             MidiPlayer midi = new MidiPlayer();
             midi.playSheet(playable);
         } catch (MidiUnavailableException e) {
+            e.printStackTrace();
         }
     }
 
