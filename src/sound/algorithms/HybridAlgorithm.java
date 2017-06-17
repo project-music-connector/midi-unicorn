@@ -1,4 +1,8 @@
 package sound.algorithms;
+import sound.gen.MidiPlayer;
+import sound.gen.MidiNote;
+
+import javax.sound.midi.MidiUnavailableException;
 import java.util.*;
 
 /**
@@ -20,10 +24,14 @@ public class HybridAlgorithm {
     private int bottomOctave; //octave number of the lowest note
     private int chordCounter = 0; //number of times a chord has been repeated successively (not including first instance)
     private int prevChord;
+    private int tempo;
+    private int key;
 
-    public HybridAlgorithm(int[][] image, int bottomOctave) {
+    public HybridAlgorithm(int[][] image, int bottomOctave, int key, int tempo) {
         this.image = image;
         this.bottomOctave = bottomOctave;
+        this.tempo = tempo;
+        this.key = key;
     }
 
     //diatonic major scale:       I          ii        iii        IV          V          vi        vii
@@ -107,18 +115,19 @@ public class HybridAlgorithm {
     }
 
     //given a chord and a column of raw inputs, returns list of notes that will be played
-    private ArrayList<Integer> columnNoteList(ArrayList<Integer> rawNotes, int columnChord) {
-        ArrayList<Integer> columnNotes = new ArrayList<Integer>();
+    private ArrayList<MidiNote> columnNoteList(ArrayList<Integer> rawNotes, int columnChord) {
+        ArrayList<MidiNote> columnNotes = new ArrayList<>();
         for (int i = 0; i < rawNotes.size(); i++) {
             if (contain(chords[columnChord - 1], rawNotes.get(i))) {
-                columnNotes.add(rawNotes.get(i));
+                //columnNotes.add(rawNotes.get(i));
+                columnNotes.add(new MidiNote(rawNotes.get(i) + key, 1, tempo));
             }
         }
         return columnNotes;
     }
 
     //calculate the notes that will be played by the first column
-    private ArrayList<Integer> firstColumnNotes(ArrayList<Integer> rawNotes) {
+    private ArrayList<MidiNote> firstColumnNotes(ArrayList<Integer> rawNotes) {
         int columnChord = 1; //chord that will be played this column, initialized to 1 for safety
         //if the top note is part of the I chord, play the I chord
         //otherwise, take the first-priority chord containing the top note
@@ -134,7 +143,7 @@ public class HybridAlgorithm {
     }
 
     //calculate the notes that will be played all subsequent columns (except the last one
-    private ArrayList<Integer> nextColumnNotes(ArrayList<Integer> rawNotes) {
+    private ArrayList<MidiNote> nextColumnNotes(ArrayList<Integer> rawNotes) {
         int columnChord = 1; //chord that will be played this column, init to 1 for safety
         int top = getNoteName(rawNotes.get(0));
         //If TOP is element of PREVCHORD, play PREVCHORD, or if PREVCHORD has been played less than twice successively,
@@ -159,26 +168,31 @@ public class HybridAlgorithm {
     }
 
     //calculate the notes that will be played on the last column
-    private ArrayList<Integer> lastColumnNotes(ArrayList<Integer> rawNotes) {
+    private ArrayList<MidiNote> lastColumnNotes(ArrayList<Integer> rawNotes) {
         int columnChord = 1; //play I chord for last column
         int top = getNoteName(rawNotes.get(0));
-        ArrayList<Integer> columnNotes = new ArrayList<Integer>(); //list of notes that will be played this column
+        ArrayList<MidiNote> columnNotes = new ArrayList<>(); //list of notes that will be played this column
         columnNotes.addAll(columnNoteList(rawNotes, columnChord)); //add all notes part of the C major chord
-        columnNotes.add(top); //add top note
+        columnNotes.add(new MidiNote(top + key, 1, tempo)); //add top note
         return columnNotes;
     }
 
     //give an arrayList of arrayLists representing the notes that should be played, every beat (array of columns)
-    public ArrayList<Integer>[] imageNotes() {
-        ArrayList<Integer>[] notes = new ArrayList[image.length];
-        //process first row
-        notes[0] = firstColumnNotes(getRawNotes(image[0]));
-        //process all subsequent rows
-        for (int i = 1; i < image.length - 1; i++) {
-            notes[i] = nextColumnNotes(getRawNotes(image[i]));
+    public void imageNotes() {
+        try {
+            MidiPlayer midi = new MidiPlayer();
+            ArrayList<ArrayList<MidiNote>> notes = new ArrayList<>(image.length);
+            //process first row
+            notes.add(firstColumnNotes(getRawNotes(image[0])));
+            //process all subsequent rows
+            for (int i = 1; i < image.length - 1; i++) {
+                notes.add(nextColumnNotes(getRawNotes(image[i])));
+            }
+            //process last row
+            notes.add(lastColumnNotes(getRawNotes(image[image.length - 1])));
+            midi.playSheet(notes);
+        } catch (MidiUnavailableException e) {
+            e.printStackTrace();
         }
-        //process last row
-        notes[image.length - 1] = lastColumnNotes(getRawNotes(image[image.length - 1]));
-        return notes;
     }
 }

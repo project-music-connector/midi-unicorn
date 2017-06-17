@@ -39,65 +39,9 @@ public class UnicornParser {
         return image;
     }
 
-    public void play(Keys key) {
-        for (int i = 0; i < image[0].length; i++) {
-            int j = image.length - 1;
-            while (j >= 0 && image[j][i] != 1) {
-                j--;
-            }
-            int base = j % 7;
-            while (j >= 0) {
-                if (image[j][i] == 1) {
-                    image[j][i] = getNote(key, base, j % 7) + 1;
-                }
-                j--;
-            }
-        }
-        ArrayList<ArrayList<MidiNote>> playable = new ArrayList<>(image[0].length+1);
-        for (int i = 0; i < image.length; i++) {
-            playable.add(new ArrayList<>(image.length));
-        }
-        for (int i = 0; i < image.length; i++) {
-            int previous = 0;
-            int initial = 0;
-            int count = 0;
-            for (int j = 0; j < image[0].length; j++) {
-                if (image[i][j] == 0 && image[i][j] != previous) {
-                    int note = (image[i][initial] + key.getValue()) + i*12/7 - image.length/7/2*12 + 63;
-                    playable.get(i).add(new MidiNote(note, 1,count));
-                    count = 0;
-                } else if (image[j][i] != 0) {
-                    if (image[i][j] != previous) {
-                        initial = j;
-                    }
-                    count++;
-                    playable.get(i).add(null);
-                } else {
-                    playable.get(i).add(null);
-                }
-                if (j == image[0].length-1 && image[j][i] != 0) {
-                    int note = (image[i][initial] + key.getValue()) + i*12/7 - image.length/7/2*12 + 63;
-                    playable.get(i).add(new MidiNote(note, 1,count));
-                }
-                previous = image[j][i];
-            }
-        }
-        try {
-            MidiPlayer midi = new MidiPlayer();
-            midi.playSheet(playable);
-        } catch (MidiUnavailableException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private int getNote(Keys key, int base, int note) {
-        int[] val = key.getRelationTable()[base].getProgression();
-        switch (note) {
-            case 0: return val[0];
-            case 2: return val[1];
-            case 4: return val[2];
-            default: return -2;
-        }
+    public void play(int bottomOctave, int key, int tempo) {
+        HybridAlgorithm alg = new HybridAlgorithm(image, bottomOctave, key, tempo);
+        alg.imageNotes();
     }
 
 }
