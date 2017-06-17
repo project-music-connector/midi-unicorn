@@ -39,17 +39,59 @@ public class HybridAlgorithm {
     private ArrayList<Integer> getRawNotes(int[] column) {
         ArrayList<Integer> rawNotes = new ArrayList<Integer>();
         //go through pixels from top to bottom
-        for (int i = column.length - 1; i < column.length; i--) {
+        for (int i = column.length - 1; i >= 0; i--) {
             if (column[i] == 1) {
-                rawNotes.add((bottomOctave + 1)*12 + i); //C1 = 24; C2 = 36; Cn = 12(n+1)
+                rawNotes.add((bottomOctave + 1)*12 + num2Midi(i % 7)); //C1 = 24; C2 = 36; Cn = 12(n+1)
             }
         }
         return rawNotes;
     }
 
+    private int num2Midi(int val) {
+        switch (val) {
+            case 0:
+                return 0;
+            case 1:
+                return 2;
+            case 2:
+                return 4;
+            case 3:
+                return 5;
+            case 4:
+                return 7;
+            case 5:
+                return 9;
+            case 6:
+                return 11;
+            default:
+                return 0;
+        }
+    }
+
+    private int midi2Num(int val) {
+        switch (val) {
+            case 0:
+                return 1;
+            case 2:
+                return 2;
+            case 4:
+                return 3;
+            case 5:
+                return 4;
+            case 7:
+                return 5;
+            case 9:
+                return 6;
+            case 11:
+                return 7;
+            default:
+                return 0;
+        }
+    }
+
     //get note name (C, D, E, etc.) given a MIDI value
     private int getNoteName(int num) {
-        return (num % 12) + 1;
+        return midi2Num(num % 12);
     }
 
     //tests whether an int array contains an int
@@ -127,31 +169,16 @@ public class HybridAlgorithm {
     }
 
     //give an arrayList of arrayLists representing the notes that should be played, every beat (array of columns)
-    public ArrayList<ArrayList<Integer>> imageNotes() {
-        ArrayList<ArrayList<Integer>> notes = new ArrayList<>();
-        ArrayList<Integer> rest = new ArrayList<>();
-        rest.add(0); //there's gotta be a better way to do this
-        //if a row is empty, add an empty arraylist.
+    public ArrayList<Integer>[] imageNotes() {
+        ArrayList<Integer>[] notes = new ArrayList[image.length];
         //process first row
-        if (getRawNotes(image[0]).size() > 0) {
-            notes.add(firstColumnNotes(getRawNotes(image[0])));
-        } else {
-            notes.add(rest);
-        }
+        notes[0] = firstColumnNotes(getRawNotes(image[0]));
         //process all subsequent rows
         for (int i = 1; i < image.length - 1; i++) {
-            if (getRawNotes(image[i]).size() > 0) {
-                notes.add(nextColumnNotes(getRawNotes(image[i])));
-            } else {
-                notes.add(rest);
-            }
+            notes[i] = nextColumnNotes(getRawNotes(image[i]));
         }
         //process last row
-        if (getRawNotes(image[image.length - 1]).size() > 0) {
-            notes.add(lastColumnNotes(getRawNotes(image[image.length - 1])));
-        } else {
-            notes.add(rest);
-        }
+        notes[image.length - 1] = lastColumnNotes(getRawNotes(image[image.length - 1]));
         return notes;
     }
 }
