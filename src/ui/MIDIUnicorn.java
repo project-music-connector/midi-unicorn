@@ -14,7 +14,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.w3c.dom.css.Rect;
-import sound.algorithms.Keys;
 import sound.algorithms.UnicornParser;
 
 import javax.imageio.ImageIO;
@@ -150,8 +149,8 @@ public class MIDIUnicorn extends Application {
 //                                (tmp.getRed()+tmp.getBlue()+tmp.getGreen())/3;
 //                    }
 //                }
-                parser.parse(userImage, 8,8); // TODO: Implement octave and divisions selection
-                parser.play(Keys.A_FLAT_MJ);
+                parser.parse(userImage, 3,8); // TODO: Implement octave and divisions selection
+                parser.play(2, 1, 60);
             }
         });
 

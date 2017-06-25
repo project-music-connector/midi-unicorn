@@ -17,7 +17,7 @@ public class UnicornParser {
     public int[][] parse(BufferedImage im, int octaves, int divisions) {
         int height = im.getHeight() / (octaves * 7);
         int width = im.getWidth() / divisions;
-        image = new int[height][width];
+        image = new int[octaves * 7][divisions];
         for (int x = 0; x < octaves * 7; x++) {
             for (int y = 0; y < divisions; y++) {
                 int red = 0;
@@ -31,7 +31,7 @@ public class UnicornParser {
                         blue += clr & 0x000000ff;
                     }
                 }
-                if ((red + blue + green) / (3 * width * height) > 70) {
+                if ((red + blue + green) / 3 > 70) {
                     image[x][y] = 1;
                 }
             }
