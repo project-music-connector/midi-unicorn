@@ -225,9 +225,8 @@ public class MIDIUnicorn extends Application {
         Button go = new Button("Go!");
         go.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent a) {
-                WritableImage writableImage = new WritableImage(w,h);
-                canvas.snapshot(null, writableImage);
-                setupPlayScene(new UnicornParser(writableImage, (int)round(octaves.getValue()), (int)round(bars.getValue() * 4)));
+                wr = canvas.snapshot(null, null);
+                setupPlayScene(new UnicornParser(wr, (int)round(octaves.getValue()), (int)round(bars.getValue() * 4)));
                 window.setScene(playScene);
             }
         });
