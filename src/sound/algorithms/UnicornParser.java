@@ -1,11 +1,15 @@
 package sound.algorithms;
 
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import sound.gen.MidiNote;
 import sound.gen.MidiPlayer;
 
 import javax.sound.midi.MidiUnavailableException;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
+import static java.lang.Math.floor;
 
 /**
  * Created by Asimm on 4/7/2017.
@@ -14,10 +18,11 @@ import java.util.ArrayList;
 public class UnicornParser {
     private int[][] image;
 
-    public int[][] parse(BufferedImage im, int octaves, int divisions) {
-        int height = im.getHeight() / (octaves * 7);
-        int width = im.getWidth() / divisions;
+    public UnicornParser(WritableImage im, int octaves, int divisions) {
+        int height = (int) floor(im.getHeight() / (octaves * 7));
+        int width = (int) floor(im.getWidth() / divisions);
         image = new int[octaves * 7][divisions];
+        PixelReader pr = im.getPixelReader();
         for (int x = 0; x < octaves * 7; x++) {
             for (int y = 0; y < divisions; y++) {
                 int red = 0;
@@ -25,20 +30,25 @@ public class UnicornParser {
                 int green = 0;
                 for (int i = 0; i < height; i++) {
                     for (int j = 0; j < width; j++) {
-                        int clr = im.getRGB(i, j);
-                        red += (clr & 0x00ff0000) >> 16;
-                        green += (clr & 0x0000ff00) >> 8;
-                        blue += clr & 0x000000ff;
+                        int clr = pr.getArgb(j+y*width, i+x*height);
+                        red += (clr >> 16) & 0xff;
+                        green += (clr >> 8) & 0xff;
+                        blue += clr & 0xff;
                     }
                 }
-                if ((red + blue + green) / 3 > 70) {
+                if ((red/(height*width) + green/(height*width) + blue/(height*width))/3 < 175) {
                     image[x][y] = 1;
                 }
             }
         }
-        return image;
     }
 
+    public int[][] getImage() {
+        return image;
+    }
+    public void setImage(int[][] image) {
+        this.image = image;
+    }
     public void play(int bottomOctave, int key, int tempo) {
         HybridAlgorithm alg = new HybridAlgorithm(image, bottomOctave, key, tempo);
         alg.imageNotes();
