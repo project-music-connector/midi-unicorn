@@ -117,10 +117,12 @@ public class HybridAlgorithm {
     //given a chord and a column of raw inputs, returns list of notes that will be played
     private ArrayList<MidiNote> columnNoteList(ArrayList<Integer> rawNotes, int columnChord) {
         ArrayList<MidiNote> columnNotes = new ArrayList<>();
-        for (int i = 0; i < rawNotes.size(); i++) {
-            if (contain(chords[columnChord - 1], rawNotes.get(i))) {
-                //columnNotes.add(rawNotes.get(i));
-                columnNotes.add(new MidiNote(rawNotes.get(i) + key, 1, tempo));
+        if (!rawNotes.isEmpty()) {
+            for (int i = 0; i < rawNotes.size(); i++) {
+                if (contain(chords[columnChord - 1], rawNotes.get(i))) {
+                    //columnNotes.add(rawNotes.get(i));
+                    columnNotes.add(new MidiNote(rawNotes.get(i) + key, 1, tempo));
+                }
             }
         }
         return columnNotes;
@@ -131,35 +133,38 @@ public class HybridAlgorithm {
         int columnChord = 1; //chord that will be played this column, initialized to 1 for safety
         //if the top note is part of the I chord, play the I chord
         //otherwise, take the first-priority chord containing the top note
-        int top = getNoteName(rawNotes.get(0));
-        if (top == 1 || top == 3 || top == 5) {
+        if (!rawNotes.isEmpty()) {
+            int top = getNoteName(rawNotes.get(0));
+            if (top == 1 || top == 3 || top == 5) {
                 columnChord = 1;
-        } else {
-            columnChord = chordsWithNotes[top - 1][0];
+            } else {
+                columnChord = chordsWithNotes[top - 1][0];
+            }
+            prevChord = columnChord;
         }
-        prevChord = columnChord;
-
         return columnNoteList(rawNotes, columnChord);
     }
 
     //calculate the notes that will be played all subsequent columns (except the last one
     private ArrayList<MidiNote> nextColumnNotes(ArrayList<Integer> rawNotes) {
         int columnChord = 1; //chord that will be played this column, init to 1 for safety
-        int top = getNoteName(rawNotes.get(0));
-        //If TOP is element of PREVCHORD, play PREVCHORD, or if PREVCHORD has been played less than twice successively,
-        //then play PREVCHORD.
-        //Else, choose chord COLUMNCHORD such that TOP is element of COLUMNCHORD, and PREVCHORD -> COLUMNCHORD is a
-        //valid transition (see array PROGRESSIONS)
-        if (contain(chords[prevChord - 1], top) && chordCounter < 2) {
-            columnChord = prevChord;
-            chordCounter++;
-        } else {
-            int[] possibleChords = progressions[prevChord - 1]; //possible chord, considering progression
-            for (int i = 0; i < possibleChords.length; i++) {   //test which chord contains top note
-                if (contain(chords[possibleChords[i] - 1], top)) {
-                    columnChord = possibleChords[i];
-                    chordCounter = 0;
-                    break;
+        if (!rawNotes.isEmpty()) {
+            int top = getNoteName(rawNotes.get(0));
+            //If TOP is element of PREVCHORD, play PREVCHORD, or if PREVCHORD has been played less than twice successively,
+            //then play PREVCHORD.
+            //Else, choose chord COLUMNCHORD such that TOP is element of COLUMNCHORD, and PREVCHORD -> COLUMNCHORD is a
+            //valid transition (see array PROGRESSIONS)
+            if (contain(chords[prevChord - 1], top) && chordCounter < 2) {
+                columnChord = prevChord;
+                chordCounter++;
+            } else {
+                int[] possibleChords = progressions[prevChord - 1]; //possible chord, considering progression
+                for (int i = 0; i < possibleChords.length; i++) {   //test which chord contains top note
+                    if (contain(chords[possibleChords[i] - 1], top)) {
+                        columnChord = possibleChords[i];
+                        chordCounter = 0;
+                        break;
+                    }
                 }
             }
         }
@@ -170,10 +175,14 @@ public class HybridAlgorithm {
     //calculate the notes that will be played on the last column
     private ArrayList<MidiNote> lastColumnNotes(ArrayList<Integer> rawNotes) {
         int columnChord = 1; //play I chord for last column
-        int top = getNoteName(rawNotes.get(0));
         ArrayList<MidiNote> columnNotes = new ArrayList<>(); //list of notes that will be played this column
-        columnNotes.addAll(columnNoteList(rawNotes, columnChord)); //add all notes part of the C major chord
-        columnNotes.add(new MidiNote(top + key, 1, tempo)); //add top note
+        if (!rawNotes.isEmpty()) {
+            int top = getNoteName(rawNotes.get(0));
+            columnNotes.addAll(columnNoteList(rawNotes, columnChord)); //add all notes part of the C major chord
+            columnNotes.add(new MidiNote(top + key, 1, tempo)); //add top note
+        } else {
+            columnNotes.add(new MidiNote(key, 1, tempo)); //add top note
+        }
         return columnNotes;
     }
 
