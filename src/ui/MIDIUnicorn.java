@@ -313,15 +313,16 @@ public class MIDIUnicorn extends Application {
                 }
             }
         }
+        int[][] img = new int[im[0].length][im.length];
         Button go = new Button("Play");
         go.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent a) {
                 for (Node node : activePane.getChildren()) {
                     if (node instanceof ImageUnit) {
-                        im[((ImageUnit) node).getXVal()][((ImageUnit) node).getYVal()] = ((ImageUnit) node).getValue();
+                        img[((ImageUnit) node).getYVal()][((ImageUnit) node).getXVal()] = ((ImageUnit) node).getValue();
                     }
                 }
-                parser.setImage(im);
+                parser.setImage(img);
                 parser.play((int)octaves.getValue()/2 + 1, key.getValue().getKey(), (int)tempo.getValue());
             }
         });

@@ -10,10 +10,10 @@ public class MidiNote {
 
     public static final int baseDuration = 200;
 
-    public MidiNote(int key, int velocity, int duration) {
+    public MidiNote(int key, int velocity, int tempo) {
         this.key = key;
         this.velocity = velocity;
-        this.duration = duration*baseDuration;
+        this.duration = tempo;
     }
 
     public int getKey() {

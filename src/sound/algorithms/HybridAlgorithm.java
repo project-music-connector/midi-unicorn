@@ -47,9 +47,9 @@ public class HybridAlgorithm {
     private ArrayList<Integer> getRawNotes(int[] column) {
         ArrayList<Integer> rawNotes = new ArrayList<Integer>();
         //go through pixels from top to bottom
-        for (int i = column.length - 1; i >= 0; i--) {
+        for (int i = 0; i < column.length; i++) {
             if (column[i] == 1) {
-                rawNotes.add((bottomOctave + 1)*12 + num2Midi(i % 7)); //C1 = 24; C2 = 36; Cn = 12(n+1)
+                rawNotes.add((bottomOctave + 1)*12 + 12*i/7 + num2Midi(i % 7)); //C1 = 24; C2 = 36; Cn = 12(n+1)
             }
         }
         return rawNotes;
@@ -119,7 +119,7 @@ public class HybridAlgorithm {
         ArrayList<MidiNote> columnNotes = new ArrayList<>();
         if (!rawNotes.isEmpty()) {
             for (int i = 0; i < rawNotes.size(); i++) {
-                if (contain(chords[columnChord - 1], rawNotes.get(i))) {
+                if (contain(chords[columnChord - 1], getNoteName(rawNotes.get(i)))) {
                     //columnNotes.add(rawNotes.get(i));
                     columnNotes.add(new MidiNote(rawNotes.get(i) + key, 1, tempo));
                 }
@@ -140,8 +140,9 @@ public class HybridAlgorithm {
             } else {
                 columnChord = chordsWithNotes[top - 1][0];
             }
-            prevChord = columnChord;
+
         }
+        prevChord = columnChord;
         return columnNoteList(rawNotes, columnChord);
     }
 
@@ -199,7 +200,7 @@ public class HybridAlgorithm {
             }
             //process last row
             notes.add(lastColumnNotes(getRawNotes(image[image.length - 1])));
-            midi.playSheet(notes);
+            midi.playSheet(notes, tempo);
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
         }
