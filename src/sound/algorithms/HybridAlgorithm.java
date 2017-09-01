@@ -47,8 +47,8 @@ public class HybridAlgorithm {
     private ArrayList<Integer> getRawNotes(int[] column) {
         ArrayList<Integer> rawNotes = new ArrayList<Integer>();
         //go through pixels from top to bottom
-        for (int i = 0; i < column.length; i++) {
-            if (column[i] == 1) {
+        for (int i = column.length - 1; i >= 0; i--) {
+            if (column[column.length - 1 - i] == 1) {
                 rawNotes.add((bottomOctave + 1)*12 + 12*i/7 + num2Midi(i % 7)); //C1 = 24; C2 = 36; Cn = 12(n+1)
             }
         }
