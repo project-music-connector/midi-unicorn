@@ -323,7 +323,7 @@ public class MIDIUnicorn extends Application {
                     }
                 }
                 parser.setImage(img);
-                parser.play((int)octaves.getValue()/2 + 1, key.getValue().getKey(), (int)tempo.getValue());
+                parser.play(5 - (int)octaves.getValue()/2 - 1, key.getValue().getKey(), (int)tempo.getValue());
             }
         });
 
